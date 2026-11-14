@@ -1,61 +1,18 @@
-# Jena Plugins for Pentaho KETTLE
+# Object-oriented, idiomatic RDF in Java: a manifest-based test suite
 
-[![CI](https://github.com/nationalarchives/kettle-jena-plugins/workflows/CI/badge.svg)](https://github.com/nationalarchives/kettle-jena-plugins/actions?query=workflow%3ACI)
-[![Java 8](https://img.shields.io/badge/java-8+-blue.svg)](https://adoptopenjdk.net/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+This branch shows how to work with in-memory RDF from idiomatic, object-oriented Java. It was made for [The National Archives](https://www.nationalarchives.gov.uk) as a contribution to their [kettle-jena-plugins](https://github.com/nationalarchives/kettle-jena-plugins) project. Pull request: https://github.com/nationalarchives/kettle-jena-plugins/pull/26
 
-This project contains plugins for [Pentaho Data Integration](https://github.com/pentaho/pentaho-kettle) (or KETTLE as it is commonly known),
-that add functionality via [Apache Jena](https://jena.apache.org/) for producing RDF.
+## The project at The National Archives
+The plugins are part of Project OMEGA at The National Archives. OMEGA replaces the catalogue systems of The National Archives with a single system based on a graph data model. The plugins let data integration pipelines convert records from the existing catalogue databases into RDF with Apache Jena.
 
-The plugins provided are:
-1. Create Jena Model
-    
-    This transform plugin can be used to create a Jena Model for each row sent to it. The plugin enables the mapping of database columns to RDF Literals or Resources.
+## The test suite
+The main change is in commit [e25a814](https://github.com/langsamu/kettle-jena-plugins/commit/e25a814d11c6c995bd0cbd8a132c7a0d1fde9ba2). The example is an integration test suite that is described in RDF:
+- [`manifest.ttl`](https://github.com/langsamu/kettle-jena-plugins/blob/e25a814d11c6c995bd0cbd8a132c7a0d1fde9ba2/src/test/resources/uk/gov/nationalarchives/pdi/step/jena/manifest.ttl) is an RDF graph. Each entry in it identifies an action to run and the graph that the action must produce.
+- Java classes such as [`Manifest`](https://github.com/langsamu/kettle-jena-plugins/blob/e25a814d11c6c995bd0cbd8a132c7a0d1fde9ba2/src/test/java/uk/gov/nationalarchives/pdi/step/jena/Manifest.java) and [`Entry`](https://github.com/langsamu/kettle-jena-plugins/blob/e25a814d11c6c995bd0cbd8a132c7a0d1fde9ba2/src/test/java/uk/gov/nationalarchives/pdi/step/jena/Entry.java) wrap the nodes of that graph. Code uses them as typed objects with properties, and the RDF stays the single source of truth.
+- [`TestSuiteIT`](https://github.com/langsamu/kettle-jena-plugins/blob/e25a814d11c6c995bd0cbd8a132c7a0d1fde9ba2/src/test/java/uk/gov/nationalarchives/pdi/step/jena/TestSuiteIT.java) iterates the manifest entries, runs each action and compares the result graph with the expected graph. This replaces the separate per-feature integration tests.
 
-2. Serialize Jena Model
-    
-    This output plugin takes the output of the Create Jena Model plugin, and serializes it to an RDF file on disk. Supports Turtle, N3, N-Triples, and RDF/XML output formats.
-
-This project was developed by [Evolved Binary](https://evolvedbinary.com) as part of Project OMEGA for the [National Archives](https://nationalarchives.gov.uk).
-
-## Getting the Plugins
-
-You can either download the plugins from our GitHub releases page: https://github.com/nationalarchives/kettle-jena-plugins/releases/, or you can build them from source.
-
-## Building from Source Code
-The plugins can be built from Source code by installing the pre-requisites and following the steps described below.
-
-### Pre-requisites for building the project:
-* [Apache Maven](https://maven.apache.org/), version 3+
-* [Java JDK](https://adoptopenjdk.net/) 1.8
-* [Git](https://git-scm.com)
-
-### Build steps:
-1. Clone the Git repository
-    ```
-    $ git clone https://github.com/nationalarchives/kettle-jena-plugins.git
-    ```
-
-2. Compile a package
-    ```
-    $ cd kettle-jena-plugins
-    $ mvn clean package
-    ```
-    
-3. The plugins directory is then available at `target/kettle-jena-plugins-1.0.0-SNAPSHOT-kettle-plugin/kettle-jena-plugins`
-
-
-## Installing the plugins
-* Tested with Pentaho Data Integration - Community Edition - version: 8.3.0.0-371
-
-You can simply copy the plugins directory `kettle-jena-plugins` (from building above) into the `plugins` sub-directory of your KETTLE installation, e.g.:
-```
-  $ cp -r target/kettle-jena-plugins-1.0.0-SNAPSHOT-kettle-plugin/kettle-jena-plugins /opt/data-integration/plugins/
-```
-
-## Using the plugins
-We wrote a short blog about working with the plugins: https://blog.adamretter.org.uk/rdf-plugins-for-pentaho-kettle/
-
-We also created a small screencast demonstrating how to use the plugins in Pentaho Kettle. It's hosted on YouTube, click the image below to visit the video:
-
-[![Watch the video](https://img.youtube.com/vi/2uqG_z2Qy9g/maxresdefault.jpg)](https://www.youtube.com/embed/2uqG_z2Qy9g)
+## Similar projects
+This approach resulted in these packages:
+- JavaScript: https://github.com/rdfjs/wrapper
+- .NET: https://github.com/langsamu/dotnetrdf/tree/wrapping/Libraries/dotNetRDF.Wrapping
+- Java (work in progress): https://github.com/inrupt/rdf-wrapping-java
